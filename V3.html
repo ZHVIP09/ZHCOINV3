@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="ku">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZHCOIN V2</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(45deg, #ff0000, #2b05d1, #ff0000);
+            background-size: 400% 400%;
+            animation: gradient 15s ease infinite;
+            color: #fff;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        @keyframes glow {
+            0% { box-shadow: 0 0 10px #ff0000, 0 0 20px #ff0000; }
+            50% { box-shadow: 0 0 20px #00ff00, 0 0 30px #00ff00; }
+            100% { box-shadow: 0 0 10px #ff0000, 0 0 20px #ff0000; }
+        }
+        .game-container {
+            text-align: center;
+            background: rgba(44, 40, 40, 0.8);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            width: 90%;
+            max-width: 500px;
+            animation: fadeIn 1s;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            padding: 20px;
+            background-color: #291b1b2a;
+            border-radius: 20px 20px 0 0;
+            box-shadow: 0 2px 10px rgba(207, 17, 17, 0.705);
+        }
+        .header div {
+            display: flex;
+            align-items: center;
+        }
+        .header img {
+            border-radius: 50%;
+            margin-right: 10px;
+            width: 40px;
+            height: 40px;
+        }
+        .coins, .energy, .level {
+            font-size: 1.5em;
+            margin: 10px 0;
+        }
+        .coins {
+            color: #ff0000;
+        }
+        .energy {
+            color: #00ff00;
+        }
+        .level {
+            color: #0004ff;
+        }
+        .hamster {
+            width: 200px;
+            height: 200px;
+            margin: 29px auto;
+            background-image: url('https://i.postimg.cc/ht0wRQmz/Default-Transform-your-imagination-into-reality-with-a-unique-3.jpg');
+            background-size: cover;
+            background-position: center;
+            cursor: pointer;
+            border-radius: 50%;
+            box-shadow: 0 0 20px rgba(255, 255, 254, 0.5);
+            transition: transform 0.2s ease-in-out;
+        }
+        .hamster:hover {
+            transform: scale(1.1);
+        }
+        .hamster:active {
+            transform: scale(0.95);
+        }
+        .progress-bar {
+            background-color: #0000005d;
+            border-radius: 25px;
+            overflow: hidden;
+            width: 80%;
+            margin: 20px auto;
+            box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+        }
+        .progress {
+            background-color: #00ff2a;
+            height: 20px;
+            width: 0%;
+            transition: width 0.3s;
+        }
+        .boosts {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            margin: 20px 0;
+        }
+        .boost {
+            background-color: #555;
+            padding: 10px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.3s;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            margin: 10px;
+            animation: glow 1.5s infinite;
+        }
+        .boost:hover {
+            background-color: #13bd04;
+            transform: scale(1.05);
+        }
+        .boost:active {
+            transform: scale(0.95);
+        }
+        .daily-reward {
+            margin: 20px 0;
+            padding: 10px;
+            background-color: #fa0a0a05;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgb(255, 0, 0);
+        }
+        .button {
+            background-color: #e91919e0;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 16px;
+            transition: background-color 0.3s;
+            box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+        }
+        .button:hover {
+            background-color: #45a049;
+        }
+        .button:active {
+            background-color: #3e8e41;
+        }
+        .settings {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 10px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.3s;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+        .settings:hover {
+            transform: scale(1.1);
+        }
+        .menu {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(44, 40, 40, 0.9);
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            width: 80%;
+            max-width: 400px;
+            text-align: center;
+            z-index: 1000;
+        }
+        .menu.active {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+        .close-menu {
+            background-color: #e91919e0;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-top: 10px;
+        }
+        .close-menu:hover {
+            background-color: #45a049;
+        }
+        .close-menu:active {
+            background-color: #3e8e41;
+        }
+        .profile-settings {
+            margin: 20px 0;
+        }
+        .profile-settings img {
+            border-radius: 50%;
+            width: 80px;
+            height: 80px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            border: 2px solid #fff;
+        }
+        .profile-settings input[type="file"] {
+            display: none;
+        }
+        .social-links {
+            margin: 20px 0;
+        }
+        .social-links a {
+            display: block;
+            color: #00ff2a;
+            text-decoration: none;
+            margin: 10px 0;
+            transition: color 0.3s;
+        }
+        .social-links a:hover {
+            color: #ff0000;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div>
+            <img src="https://i.ibb.co/sH6kkS7/Screenshot-2024-05-13-141109-removebg-preview-1.png" alt="ZHCOIN" id="profileImage">
+            <span id="profileUsername">بەکارهێنەر</span>
+        </div>
+    </div>
+    <div class="game-container">
+        <h1>ZHCOIN V2</h1>
+        <div class="coins">ژمارەی کۆینەکان: <span id="coinCount">0</span> 🪙</div>
+        <div class="energy">هێزی: <span id="energyCount">1000/1000</span> ⚡</div>
+        <div class="level">ئاست: <span id="levelCount">1 (بڕۆنزی)</span> 🏅</div>
+        <div class="hamster" id="hamster"></div>
+        <div class="progress-bar">
+            <div class="progress" id="progress"></div>
+        </div>
+        <div class="boosts">
+            <div class="boost" onclick="buyBoost('multitap')">کڕینی چەسپەی زۆر (2000 کۆین) ⚡</div>
+            <div class="boost" onclick="buyBoost('energy')">کڕینی هێزی زیاتر (2000 کۆین) 🚀</div>
+            <div class="boost" onclick="buyBoost('coinMiner')">کڕینی ماشینی خاوەن کۆینەکان (1 کۆین) ⛏️</div>
+        </div>
+        <div class="daily-reward">
+            <button class="button" onclick="claimDailyReward()">وەرگرتنی پاداشت ڕۆژانە [2000 - 4000 کۆین] 🎁</button>
+        </div>
+    </div>
+    <div class="settings" onclick="toggleMenu()">⚙️   SETTINGS </div>
+    <div class="menu" id="menu">
+        <h2> سێتینگی یاری</h2>
+        <div class="profile-settings">
+            <h3>پرۆفایل</h3>
+            <img src="https://i.ibb.co/sH6kkS7/Screenshot-2024-05-13-141109-removebg-preview-1.png" alt="وێنەی پرۆفایل" id="profileImagePreview" onclick="document.getElementById('profileImageInput').click()">
+            <input type="file" id="profileImageInput" accept="image/*" onchange="changeProfileImage(event)">
+            <input type="text" id="profileUsernameInput" placeholder="ناوی نوێ بنووسە">
+            <button class="button" onclick="changeUsername()">گۆڕینی ناو</button>
+        </div>
+        <div class="social-links">
+            <h3>بەستەرە کۆمەڵایەتیەکان</h3>
+            <a href="https://t.me/ZHVIP78/482" target="_blank">Telegram 📱</a>
+            <a href="https://zhvip09.github.io/ZHVIP-WEBSITE-V0.2.2/" target="_blank">Website 🌐</a>
+            <a href="https://zhvip09.github.io/ZHVIP-GAMES/" target="_blank">Games 🎮</a>
+        </div>
+        <div class="wallet-connection">
+            <h3>پەیوەندیدانی جێبەکە</h3>
+            <button class="button" onclick="connectWallet()">پەیوەندیدانی جێبە 🪙</button>
+        </div>
+        <button class="close-menu" onclick="toggleMenu()">داخستن</button>
+    </div>
+    <script>
+        let coins = 0;
+        let level = 1;
+        let progress = 0;
+        let energy = 1000;
+        let dailyRewardClaimed = false;
+        let multitapBoost = false;
+        let energyBoost = false;
+        let coinMinerBoost = false;
+
+        const coinCountEl = document.getElementById('coinCount');
+        const energyCountEl = document.getElementById('energyCount');
+        const levelCountEl = document.getElementById('levelCount');
+        const progressEl = document.getElementById('progress');
+        const hamsterEl = document.getElementById('hamster');
+
+        const levels = [
+            { level: 1, name: 'بڕۆنزی', balance: 0 },
+            { level: 2, name: 'سیلڤەر', balance: 5000 },
+            { level: 3, name: 'زێڕی', balance: 25000 },
+            { level: 4, name: 'پلەتی', balance: 100000 },
+            { level: 5, name: 'دیامۆندی', balance: 1000000 },
+            { level: 6, name: 'ئێپیکی', balance: 2000000 },
+            { level: 7, name: 'لێژەندەری', balance: 10000000 },
+            { level: 8, name: 'مێستەری', balance: 50000000 },
+            { level: 9, name: 'مێستەری گەورە', balance: 100000000 }
+        ];
+
+        hamsterEl.addEventListener('click', () => {
+            if (energy > 0) {
+                let increment = 1;
+                if (multitapBoost) increment *= 5;
+                coins += increment;
+                energy--;
+                updateUI();
+            } else {
+                alert('هێزەکان کەمکراون! ⚡');
+            }
+        });
+
+        function updateUI() {
+            coinCountEl.textContent = coins;
+            energyCountEl.textContent = `${energy}/1000`;
+            const nextLevel = levels.find(l => l.level === level + 1);
+            if (nextLevel) {
+                progress = (coins / nextLevel.balance) * 100;
+                progressEl.style.width = `${progress}%`;
+            }
+
+            if (progress >= 100) {
+                levelUp();
+            }
+        }
+
+        function levelUp() {
+            level++;
+            progress = 0;
+            const currentLevel = levels.find(l => l.level === level);
+            if (currentLevel) {
+                levelCountEl.textContent = `${level} (${currentLevel.name})`;
+            }
+            progressEl.style.width = `${progress}%`;
+            alert('ئاستەکەت بەرز بوو! ئێستا ئاستی ' + level + ' (' + currentLevel.name + ') 🏆');
+        }
+
+        function buyBoost(type) {
+            if (type === 'coinMiner' && coins >= 1) {
+                coins -= 1;
+                coinMinerBoost = true;
+                setInterval(() => {
+                    coins += 10;
+                    updateUI();
+                }, 1000);
+                alert('کڕینی ماشینی خاوەن کۆینەکان بەسەرکەوتوویی ئەنجام درا! ⛏️');
+            } else if (coins >= 2000) {
+                coins -= 2000;
+                if (type === 'multitap') multitapBoost = true;
+                if (type === 'energy') {
+                    energyBoost = true;
+                    energy = 10000;
+                }
+                alert('کڕینی ' + type.charAt(0).toUpperCase() + type.slice(1) + '  ئەنجام درا بەسەرکەوتوویی! 🚀');
+            } else {
+                alert('کۆینەکانت کەمە بۆ کڕینی ئەم بەرزبوونیە! 💸');
+            }
+            updateUI();
+        }
+
+        function claimDailyReward() {
+            if (!dailyRewardClaimed) {
+                const dailyReward = Math.floor(Math.random() * 2000) + 2000; // Random reward between 2000 and 4000 coins
+                coins += dailyReward;
+                dailyRewardClaimed = true;
+                alert(`پاداشتی ڕۆژانەت وەرگرت: ${dailyReward} کۆین! 🎁`);
+                updateUI();
+            } else {
+                alert('تۆ پاداشتی ڕۆژانەت بەمەڕدا وەرگرتووە! 🎁');
+            }
+        }
+
+        function toggleMenu() {
+            const menu = document.getElementById('menu');
+            menu.classList.toggle('active');
+        }
+
+        // Reset daily reward claim status at midnight
+        setInterval(() => {
+            const now = new Date();
+            if (now.getHours() === 0 && now.getMinutes() === 0) {
+                dailyRewardClaimed = false;
+            }
+        }, 60000); // Check every minute
+
+        // Change profile image
+        function changeProfileImage(event) {
+            const reader = new FileReader();
+            reader.onload = function() {
+                const profileImageEl = document.getElementById('profileImage');
+                const profileImagePreviewEl = document.getElementById('profileImagePreview');
+                profileImageEl.src = reader.result;
+                profileImagePreviewEl.src = reader.result;
+            };
+            reader.readAsDataURL(event.target.files[0]);
+        }
+
+        // Change username
+        function changeUsername() {
+            const newUsername = document.getElementById('profileUsernameInput').value;
+            if (newUsername) {
+                const profileUsernameEl = document.getElementById('profileUsername');
+                profileUsernameEl.textContent = newUsername;
+                alert('ناوت بۆ ' + newUsername + ' گۆڕا! ✨');
+            } else {
+                alert('تکایە ناوی نوێ بنووسە!');
+            }
+        }
+
+        // Connect wallet (placeholder function)
+        function connectWallet() {
+            alert('جێبەکەت پەیوەندی کرد! 🪙');
+        }
+    </script>
+</body>
+</html>
