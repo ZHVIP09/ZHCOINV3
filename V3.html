@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ZHCOIN V2</title>
+    <title>ZHCOIN V3 Enhanced with Sound Effects</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -25,11 +25,6 @@
             50% { background-position: 100% 50%; }
             100% { background-position: 0% 50%; }
         }
-        @keyframes glow {
-            0% { box-shadow: 0 0 10px #ff0000, 0 0 20px #ff0000; }
-            50% { box-shadow: 0 0 20px #00ff00, 0 0 30px #00ff00; }
-            100% { box-shadow: 0 0 10px #ff0000, 0 0 20px #ff0000; }
-        }
         .game-container {
             text-align: center;
             background: rgba(44, 40, 40, 0.8);
@@ -38,7 +33,6 @@
             box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
             width: 90%;
             max-width: 500px;
-            animation: fadeIn 1s;
         }
         .header {
             display: flex;
@@ -119,7 +113,6 @@
             transition: background-color 0.3s, transform 0.3s;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
             margin: 10px;
-            animation: glow 1.5s infinite;
         }
         .boost:hover {
             background-color: #13bd04;
@@ -127,6 +120,23 @@
         }
         .boost:active {
             transform: scale(0.95);
+        }
+        .boost-tooltip {
+            display: none;
+            position: absolute;
+            bottom: 120%;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0, 0, 0, 0.8);
+            padding: 5px 10px;
+            border-radius: 5px;
+            color: #fff;
+            font-size: 0.9em;
+            white-space: nowrap;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+        .boost:hover .boost-tooltip {
+            display: block;
         }
         .daily-reward {
             margin: 20px 0;
@@ -187,7 +197,6 @@
         }
         .menu.active {
             display: block;
-            animation: fadeIn 0.5s;
         }
         .close-menu {
             background-color: #e91919e0;
@@ -210,221 +219,229 @@
         }
         .profile-settings img {
             border-radius: 50%;
+            margin-bottom: 10px;
             width: 80px;
             height: 80px;
-            margin-bottom: 10px;
-            cursor: pointer;
-            border: 2px solid #fff;
         }
-        .profile-settings input[type="file"] {
-            display: none;
-        }
-        .social-links {
-            margin: 20px 0;
-        }
-        .social-links a {
+        .profile-settings input {
             display: block;
-            color: #00ff2a;
-            text-decoration: none;
-            margin: 10px 0;
-            transition: color 0.3s;
+            margin: 10px auto;
+            padding: 10px;
+            border-radius: 10px;
+            border: none;
         }
-        .social-links a:hover {
-            color: #ff0000;
+        .profile-settings button {
+            background-color: #e91919e0;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 16px;
+            transition: background-color 0.3s;
         }
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+        .profile-settings button:hover {
+            background-color: #45a049;
+        }
+        .profile-settings button:active {
+            background-color: #3e8e41;
         }
     </style>
 </head>
 <body>
-    <div class="header">
-        <div>
-            <img src="https://i.ibb.co/sH6kkS7/Screenshot-2024-05-13-141109-removebg-preview-1.png" alt="ZHCOIN" id="profileImage">
-            <span id="profileUsername">بەکارهێنەر</span>
-        </div>
-    </div>
     <div class="game-container">
-        <h1>ZHCOIN V2</h1>
-        <div class="coins">ژمارەی کۆینەکان: <span id="coinCount">0</span> 🪙</div>
-        <div class="energy">هێزی: <span id="energyCount">1000/1000</span> ⚡</div>
-        <div class="level">ئاست: <span id="levelCount">1 (بڕۆنزی)</span> 🏅</div>
-        <div class="hamster" id="hamster"></div>
+        <div class="header">
+            <div>
+                <img id="profilePicture" src="https://i.postimg.cc/QMHGZtN4/your-profile-picture.jpg" alt="Profile Picture">
+                <div>
+                    <div>ناوی یاریزان: <span id="playerName">Player</span></div>
+                </div>
+            </div>
+            <div class="settings" onclick="toggleMenu()">⚙️</div>
+        </div>
+        <div class="coins">ژیانەوە: <span id="coinCount">0</span></div>
+        <div class="energy">هەڵوەشاندن: <span id="energyCount">10</span></div>
+        <div class="level">ئاست: <span id="level">1</span></div>
+        <div id="hamster" class="hamster"></div>
         <div class="progress-bar">
-            <div class="progress" id="progress"></div>
+            <div id="progress" class="progress"></div>
         </div>
         <div class="boosts">
-            <div class="boost" onclick="buyBoost('multitap')">کڕینی چەسپەی زۆر (2000 کۆین) ⚡</div>
-            <div class="boost" onclick="buyBoost('energy')">کڕینی هێزی زیاتر (2000 کۆین) 🚀</div>
-            <div class="boost" onclick="buyBoost('coinMiner')">کڕینی ماشینی خاوەن کۆینەکان (1 کۆین) ⛏️</div>
+            <div class="boost" onclick="applyBoost('speed')">
+                <div>خێرایی</div>
+                <div class="boost-tooltip">بەکارهێنانی 50 ژیانەوە</div>
+            </div>
+            <div class="boost" onclick="applyBoost('energy')">
+                <div>ڕۆ</div>
+                <div class="boost-tooltip">بەکارهێنانی 100 ژیانەوە</div>
+            </div>
+            <div class="boost" onclick="applyBoost('time')">
+                <div>کات</div>
+                <div class="boost-tooltip">بەکارهێنانی 200 ژیانەوە</div>
+            </div>
         </div>
         <div class="daily-reward">
-            <button class="button" onclick="claimDailyReward()">وەرگرتنی پاداشت ڕۆژانە [2000 - 4000 کۆین] 🎁</button>
+            <button class="button" onclick="claimDailyReward()">وەرگرتنی خەڵاتی رۆژانە</button>
         </div>
+        <button class="button" onclick="saveGame()">پاشەکەوتکردنی یاری</button>
+        <button class="button" onclick="resetGame()">ریستکردنەوە</button>
     </div>
-    <div class="settings" onclick="toggleMenu()">⚙️   SETTINGS </div>
-    <div class="menu" id="menu">
-        <h2> سێتینگی یاری</h2>
+
+    <!-- Settings Menu -->
+    <div id="settingsMenu" class="menu">
         <div class="profile-settings">
-            <h3>پرۆفایل</h3>
-            <img src="https://i.ibb.co/sH6kkS7/Screenshot-2024-05-13-141109-removebg-preview-1.png" alt="وێنەی پرۆفایل" id="profileImagePreview" onclick="document.getElementById('profileImageInput').click()">
-            <input type="file" id="profileImageInput" accept="image/*" onchange="changeProfileImage(event)">
-            <input type="text" id="profileUsernameInput" placeholder="ناوی نوێ بنووسە">
-            <button class="button" onclick="changeUsername()">گۆڕینی ناو</button>
-        </div>
-        <div class="social-links">
-            <h3>بەستەرە کۆمەڵایەتیەکان</h3>
-            <a href="https://t.me/ZHVIP78/482" target="_blank">Telegram 📱</a>
-            <a href="https://zhvip09.github.io/ZHVIP-WEBSITE-V0.2.2/" target="_blank">Website 🌐</a>
-            <a href="https://zhvip09.github.io/ZHVIP-GAMES/" target="_blank">Games 🎮</a>
-        </div>
-        <div class="wallet-connection">
-            <h3>پەیوەندیدانی جێبەکە</h3>
-            <button class="button" onclick="connectWallet()">پەیوەندیدانی جێبە 🪙</button>
+            <h2>ڕێکخستنەکان</h2>
+            <img id="profilePictureMenu" src="https://i.postimg.cc/QMHGZtN4/your-profile-picture.jpg" alt="Profile Picture">
+            <input type="file" id="profilePictureInput" accept="image/*" onchange="changeProfilePicture(event)">
+            <input type="text" id="playerNameInput" placeholder="ناوی یاریزان" value="Player">
+            <button onclick="saveSettings()">پاشەکەوتکردن</button>
         </div>
         <button class="close-menu" onclick="toggleMenu()">داخستن</button>
     </div>
+
+    <!-- Sound Effects -->
+    <audio id="mineSound" src="https://cdn.pixabay.com/audio/2021/08/04/audio_7f1e4926c4.mp3"></audio>
+    <audio id="collectSound" src="https://cdn.pixabay.com/audio/2022/04/21/audio_90f63999f1.mp3"></audio>
+    <audio id="boostSound" src="https://cdn.pixabay.com/audio/2023/02/06/audio_21ad85c264.mp3"></audio>
+    <audio id="saveSound" src="https://cdn.pixabay.com/audio/2022/03/15/audio_6c508b7838.mp3"></audio>
+    <audio id="resetSound" src="https://cdn.pixabay.com/audio/2022/03/15/audio_23880b9a45.mp3"></audio>
+    <audio id="dailyRewardSound" src="https://cdn.pixabay.com/audio/2023/03/30/audio_74385b2042.mp3"></audio>
+
     <script>
         let coins = 0;
+        let energy = 10;
         let level = 1;
-        let progress = 0;
-        let energy = 1000;
-        let dailyRewardClaimed = false;
-        let multitapBoost = false;
-        let energyBoost = false;
-        let coinMinerBoost = false;
+        const hamster = document.getElementById("hamster");
+        const coinCount = document.getElementById("coinCount");
+        const energyCount = document.getElementById("energyCount");
+        const levelDisplay = document.getElementById("level");
+        const progress = document.getElementById("progress");
+        const mineSound = document.getElementById("mineSound");
+        const collectSound = document.getElementById("collectSound");
+        const boostSound = document.getElementById("boostSound");
+        const saveSound = document.getElementById("saveSound");
+        const resetSound = document.getElementById("resetSound");
+        const dailyRewardSound = document.getElementById("dailyRewardSound");
 
-        const coinCountEl = document.getElementById('coinCount');
-        const energyCountEl = document.getElementById('energyCount');
-        const levelCountEl = document.getElementById('levelCount');
-        const progressEl = document.getElementById('progress');
-        const hamsterEl = document.getElementById('hamster');
+        function updateDisplay() {
+            coinCount.innerText = coins;
+            energyCount.innerText = energy;
+            levelDisplay.innerText = level;
+        }
 
-        const levels = [
-            { level: 1, name: 'بڕۆنزی', balance: 0 },
-            { level: 2, name: 'سیلڤەر', balance: 5000 },
-            { level: 3, name: 'زێڕی', balance: 25000 },
-            { level: 4, name: 'پلەتی', balance: 100000 },
-            { level: 5, name: 'دیامۆندی', balance: 1000000 },
-            { level: 6, name: 'ئێپیکی', balance: 2000000 },
-            { level: 7, name: 'لێژەندەری', balance: 10000000 },
-            { level: 8, name: 'مێستەری', balance: 50000000 },
-            { level: 9, name: 'مێستەری گەورە', balance: 100000000 }
-        ];
-
-        hamsterEl.addEventListener('click', () => {
+        function mineCoin() {
             if (energy > 0) {
-                let increment = 1;
-                if (multitapBoost) increment *= 5;
-                coins += increment;
-                energy--;
-                updateUI();
-            } else {
-                alert('هێزەکان کەمکراون! ⚡');
+                mineSound.play();
+                coins += 1;
+                energy -= 1;
+                updateDisplay();
+                updateProgressBar();
             }
-        });
+        }
 
-        function updateUI() {
-            coinCountEl.textContent = coins;
-            energyCountEl.textContent = `${energy}/1000`;
-            const nextLevel = levels.find(l => l.level === level + 1);
-            if (nextLevel) {
-                progress = (coins / nextLevel.balance) * 100;
-                progressEl.style.width = `${progress}%`;
-            }
-
-            if (progress >= 100) {
+        function updateProgressBar() {
+            const progressPercent = (coins % 10) * 10;
+            progress.style.width = progressPercent + "%";
+            if (progressPercent === 0 && coins > 0) {
                 levelUp();
             }
         }
 
         function levelUp() {
-            level++;
-            progress = 0;
-            const currentLevel = levels.find(l => l.level === level);
-            if (currentLevel) {
-                levelCountEl.textContent = `${level} (${currentLevel.name})`;
-            }
-            progressEl.style.width = `${progress}%`;
-            alert('ئاستەکەت بەرز بوو! ئێستا ئاستی ' + level + ' (' + currentLevel.name + ') 🏆');
+            level += 1;
+            energy = 10;
+            updateDisplay();
         }
 
-        function buyBoost(type) {
-            if (type === 'coinMiner' && coins >= 1) {
-                coins -= 1;
-                coinMinerBoost = true;
-                setInterval(() => {
-                    coins += 10;
-                    updateUI();
-                }, 1000);
-                alert('کڕینی ماشینی خاوەن کۆینەکان بەسەرکەوتوویی ئەنجام درا! ⛏️');
-            } else if (coins >= 2000) {
-                coins -= 2000;
-                if (type === 'multitap') multitapBoost = true;
-                if (type === 'energy') {
-                    energyBoost = true;
-                    energy = 10000;
-                }
-                alert('کڕینی ' + type.charAt(0).toUpperCase() + type.slice(1) + '  ئەنجام درا بەسەرکەوتوویی! 🚀');
-            } else {
-                alert('کۆینەکانت کەمە بۆ کڕینی ئەم بەرزبوونیە! 💸');
+        hamster.addEventListener("click", mineCoin);
+
+        function applyBoost(boostType) {
+            if (boostType === "speed" && coins >= 50) {
+                boostSound.play();
+                coins -= 50;
+                energy += 10;
+            } else if (boostType === "energy" && coins >= 100) {
+                boostSound.play();
+                coins -= 100;
+                energy += 20;
+            } else if (boostType === "time" && coins >= 200) {
+                boostSound.play();
+                coins -= 200;
+                energy += 30;
             }
-            updateUI();
+            updateDisplay();
         }
 
         function claimDailyReward() {
-            if (!dailyRewardClaimed) {
-                const dailyReward = Math.floor(Math.random() * 2000) + 2000; // Random reward between 2000 and 4000 coins
-                coins += dailyReward;
-                dailyRewardClaimed = true;
-                alert(`پاداشتی ڕۆژانەت وەرگرت: ${dailyReward} کۆین! 🎁`);
-                updateUI();
-            } else {
-                alert('تۆ پاداشتی ڕۆژانەت بەمەڕدا وەرگرتووە! 🎁');
-            }
+            dailyRewardSound.play();
+            coins += 100;
+            updateDisplay();
+        }
+
+        function saveGame() {
+            saveSound.play();
+            localStorage.setItem("coins", coins);
+            localStorage.setItem("energy", energy);
+            localStorage.setItem("level", level);
+        }
+
+        function resetGame() {
+            resetSound.play();
+            coins = 0;
+            energy = 10;
+            level = 1;
+            updateDisplay();
+            updateProgressBar();
+        }
+
+        function loadGame() {
+            coins = parseInt(localStorage.getItem("coins")) || 0;
+            energy = parseInt(localStorage.getItem("energy")) || 10;
+            level = parseInt(localStorage.getItem("level")) || 1;
+            updateDisplay();
+            updateProgressBar();
         }
 
         function toggleMenu() {
-            const menu = document.getElementById('menu');
-            menu.classList.toggle('active');
+            document.getElementById("settingsMenu").classList.toggle("active");
         }
 
-        // Reset daily reward claim status at midnight
-        setInterval(() => {
-            const now = new Date();
-            if (now.getHours() === 0 && now.getMinutes() === 0) {
-                dailyRewardClaimed = false;
-            }
-        }, 60000); // Check every minute
-
-        // Change profile image
-        function changeProfileImage(event) {
+        function changeProfilePicture(event) {
             const reader = new FileReader();
             reader.onload = function() {
-                const profileImageEl = document.getElementById('profileImage');
-                const profileImagePreviewEl = document.getElementById('profileImagePreview');
-                profileImageEl.src = reader.result;
-                profileImagePreviewEl.src = reader.result;
-            };
+                document.getElementById("profilePicture").src = reader.result;
+                document.getElementById("profilePictureMenu").src = reader.result;
+            }
             reader.readAsDataURL(event.target.files[0]);
         }
 
-        // Change username
-        function changeUsername() {
-            const newUsername = document.getElementById('profileUsernameInput').value;
-            if (newUsername) {
-                const profileUsernameEl = document.getElementById('profileUsername');
-                profileUsernameEl.textContent = newUsername;
-                alert('ناوت بۆ ' + newUsername + ' گۆڕا! ✨');
-            } else {
-                alert('تکایە ناوی نوێ بنووسە!');
+        function saveSettings() {
+            const playerName = document.getElementById("playerNameInput").value;
+            document.getElementById("playerName").innerText = playerName;
+            localStorage.setItem("playerName", playerName);
+            const profilePicture = document.getElementById("profilePicture").src;
+            localStorage.setItem("profilePicture", profilePicture);
+            toggleMenu();
+        }
+
+        function loadSettings() {
+            const playerName = localStorage.getItem("playerName");
+            if (playerName) {
+                document.getElementById("playerName").innerText = playerName;
+                document.getElementById("playerNameInput").value = playerName;
+            }
+            const profilePicture = localStorage.getItem("profilePicture");
+            if (profilePicture) {
+                document.getElementById("profilePicture").src = profilePicture;
+                document.getElementById("profilePictureMenu").src = profilePicture;
             }
         }
 
-        // Connect wallet (placeholder function)
-        function connectWallet() {
-            alert('جێبەکەت پەیوەندی کرد! 🪙');
+        window.onload = function() {
+            loadGame();
+            loadSettings();
         }
     </script>
 </body>
