@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ZHCOIN V3 Enhanced with Sound Effects</title>
+    <title>ZHCOIN V2 Enhanced</title>
     <style>
         body {
-            font-family: 'Arial', sans-serif;
+            font-family: Arial, sans-serif;
             background: linear-gradient(45deg, #ff0000, #2b05d1, #ff0000);
             background-size: 400% 400%;
             animation: gradient 15s ease infinite;
@@ -25,6 +25,11 @@
             50% { background-position: 100% 50%; }
             100% { background-position: 0% 50%; }
         }
+        @keyframes glow {
+            0% { box-shadow: 0 0 10px #ff0000, 0 0 20px #ff0000; }
+            50% { box-shadow: 0 0 20px #00ff00, 0 0 30px #00ff00; }
+            100% { box-shadow: 0 0 10px #ff0000, 0 0 20px #ff0000; }
+        }
         .game-container {
             text-align: center;
             background: rgba(44, 40, 40, 0.8);
@@ -33,6 +38,7 @@
             box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
             width: 90%;
             max-width: 500px;
+            animation: fadeIn 1s;
         }
         .header {
             display: flex;
@@ -68,9 +74,9 @@
             color: #0004ff;
         }
         .hamster {
-            width: 200px;
-            height: 200px;
-            margin: 29px auto;
+            width: 150px;
+            height: 150px;
+            margin: 20px auto;
             background-image: url('https://i.postimg.cc/ht0wRQmz/Default-Transform-your-imagination-into-reality-with-a-unique-3.jpg');
             background-size: cover;
             background-position: center;
@@ -113,6 +119,8 @@
             transition: background-color 0.3s, transform 0.3s;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
             margin: 10px;
+            animation: glow 1.5s infinite;
+            position: relative;
         }
         .boost:hover {
             background-color: #13bd04;
@@ -197,6 +205,7 @@
         }
         .menu.active {
             display: block;
+            animation: fadeIn 0.5s;
         }
         .close-menu {
             background-color: #e91919e0;
@@ -228,13 +237,17 @@
             margin: 10px auto;
             padding: 10px;
             border-radius: 10px;
-            border: none;
+            border: 1px solid #ccc;
+            width: 80%;
+            font-size: 16px;
         }
         .profile-settings button {
-            background-color: #e91919e0;
+            background-color: #45a049;
             border: none;
             color: white;
             padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
             display: inline-block;
             font-size: 16px;
             margin: 4px 2px;
@@ -243,207 +256,128 @@
             transition: background-color 0.3s;
         }
         .profile-settings button:hover {
-            background-color: #45a049;
+            background-color: #3e8e41;
         }
         .profile-settings button:active {
-            background-color: #3e8e41;
+            background-color: #2e6e31;
+        }
+        .social-links {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+        }
+        .social-links a {
+            margin: 0 10px;
+            text-decoration: none;
+            color: #fff;
+            font-size: 1.5em;
+        }
+        @media (max-width: 600px) {
+            .header, .game-container {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
     </style>
 </head>
 <body>
-    <div class="game-container">
-        <div class="header">
-            <div>
-                <img id="profilePicture" src="https://i.postimg.cc/QMHGZtN4/your-profile-picture.jpg" alt="Profile Picture">
-                <div id="playerName">Player</div>
-            </div>
-            <div class="settings" onclick="toggleMenu()">⚙️</div>
+    <div class="header">
+        <div>
+            <img src="https://i.postimg.cc/ht0wRQmz/Default-Transform-your-imagination-into-reality-with-a-unique-3.jpg" alt="Avatar">
+            <span>ZHCOIN</span>
         </div>
-        <div class="coins">Coins: <span id="coinCount">0</span></div>
-        <div class="energy">Energy: <span id="energyCount">10</span></div>
-        <div class="level">Level: <span id="level">1</span></div>
-        <div id="hamster" class="hamster"></div>
+        <div class="settings" onclick="toggleMenu()">⚙️</div>
+    </div>
+    <div class="game-container">
+        <div class="coins">Zh coin: <span id="coin-count">0</span></div>
+        <div class="energy">Energy: <span id="energy-count">0</span></div>
+        <div class="level">Level: <span id="level-count">1</span></div>
+        <div class="hamster" onclick="collectCoin()"></div>
         <div class="progress-bar">
-            <div id="progress" class="progress"></div>
+            <div class="progress" id="progress"></div>
         </div>
         <div class="boosts">
-            <div class="boost" onclick="applyBoost('speed')">
-                <div>Speed</div>
-                <div class="boost-tooltip">Cost: 50 Coins</div>
+            <div class="boost" onclick="applyBoost('double-coins')">x2 Coin
+                <div class="boost-tooltip">Double coins for 5 minutes</div>
             </div>
-            <div class="boost" onclick="applyBoost('energy')">
-                <div>Energy</div>
-                <div class="boost-tooltip">Cost: 100 Coins</div>
+            <div class="boost" onclick="applyBoost('double-energy')">x2 Energy
+                <div class="boost-tooltip">Double energy for 5 minutes</div>
             </div>
-            <div class="boost" onclick="applyBoost('time')">
-                <div>Time</div>
-                <div class="boost-tooltip">Cost: 200 Coins</div>
+            <div class="boost" onclick="applyBoost('double-xp')">x2 XP
+                <div class="boost-tooltip">Double XP for 5 minutes</div>
             </div>
         </div>
         <div class="daily-reward">
             <button class="button" onclick="claimDailyReward()">Claim Daily Reward</button>
         </div>
-        <button class="button" onclick="saveGame()">Save Game</button>
-        <button class="button" onclick="resetGame()">Reset Game</button>
+        <div class="social-links">
+            <a href="https://facebook.com" target="_blank">Facebook</a>
+            <a href="https://twitter.com" target="_blank">Twitter</a>
+            <a href="https://instagram.com" target="_blank">Instagram</a>
+        </div>
     </div>
-
-    <!-- Settings Menu -->
-    <div id="settingsMenu" class="menu">
+    <div class="menu" id="settings-menu">
+        <h2>Settings</h2>
         <div class="profile-settings">
-            <h2>Settings</h2>
-            <img id="profilePictureMenu" src="https://i.postimg.cc/QMHGZtN4/your-profile-picture.jpg" alt="Profile Picture">
-            <input type="file" id="profilePictureInput" accept="image/*" onchange="changeProfilePicture(event)">
-            <input type="text" id="playerNameInput" placeholder="Player Name" value="Player">
-            <button onclick="saveSettings()">Save</button>
+            <img src="https://i.postimg.cc/ht0wRQmz/Default-Transform-your-imagination-into-reality-with-a-unique-3.jpg" alt="Avatar">
+            <input type="text" placeholder="Username">
+            <input type="email" placeholder="Email">
+            <input type="password" placeholder="Password">
+            <button onclick="saveProfile()">Save Profile</button>
         </div>
         <button class="close-menu" onclick="toggleMenu()">Close</button>
     </div>
-
-    <!-- Sound Effects -->
-    <audio id="mineSound" src="https://cdn.pixabay.com/audio/2021/08/04/audio_7f1e4926c4.mp3"></audio>
-    <audio id="collectSound" src="https://cdn.pixabay.com/audio/2022/04/21/audio_90f63999f1.mp3"></audio>
-    <audio id="boostSound" src="https://cdn.pixabay.com/audio/2023/02/06/audio_21ad85c264.mp3"></audio>
-    <audio id="saveSound" src="https://cdn.pixabay.com/audio/2022/03/15/audio_6c508b7838.mp3"></audio>
-    <audio id="resetSound" src="https://cdn.pixabay.com/audio/2022/03/15/audio_23880b9a45.mp3"></audio>
-    <audio id="dailyRewardSound" src="https://cdn.pixabay.com/audio/2023/03/30/audio_74385b2042.mp3"></audio>
-
     <script>
         let coins = 0;
-        let energy = 10;
+        let energy = 0;
         let level = 1;
-        const hamster = document.getElementById("hamster");
-        const coinCount = document.getElementById("coinCount");
-        const energyCount = document.getElementById("energyCount");
-        const levelDisplay = document.getElementById("level");
-        const progress = document.getElementById("progress");
-        const mineSound = document.getElementById("mineSound");
-        const collectSound = document.getElementById("collectSound");
-        const boostSound = document.getElementById("boostSound");
-        const saveSound = document.getElementById("saveSound");
-        const resetSound = document.getElementById("resetSound");
-        const dailyRewardSound = document.getElementById("dailyRewardSound");
+        let progress = 0;
 
-        function updateDisplay() {
-            coinCount.innerText = coins;
-            energyCount.innerText = energy;
-            levelDisplay.innerText = level;
+        function collectCoin() {
+            coins++;
+            document.getElementById('coin-count').innerText = coins;
+            updateProgress(5);
         }
 
-        function mineCoin() {
-            if (energy > 0) {
-                mineSound.play();
-                coins += 1;
-                energy -= 1;
-                updateDisplay();
-                updateProgressBar();
-                if (coins % 10 === 0) {
-                    collectSound.play();
-                }
+        function updateProgress(amount) {
+            progress += amount;
+            if (progress >= 100) {
+                level++;
+                document.getElementById('level-count').innerText = level;
+                progress = 0;
             }
+            document.getElementById('progress').style.width = progress + '%';
         }
-
-        function updateProgressBar() {
-            const progressPercent = (coins % 10) * 10;
-            progress.style.width = progressPercent + "%";
-            if (progressPercent === 0 && coins > 0) {
-                levelUp();
-            }
-        }
-
-        function levelUp() {
-            level += 1;
-            energy = 10;
-            updateDisplay();
-        }
-
-        hamster.addEventListener("click", mineCoin);
 
         function applyBoost(boostType) {
-            if (boostType === "speed" && coins >= 50) {
-                boostSound.play();
-                coins -= 50;
-                energy += 10;
-            } else if (boostType === "energy" && coins >= 100) {
-                boostSound.play();
-                coins -= 100;
-                energy += 20;
-            } else if (boostType === "time" && coins >= 200) {
-                boostSound.play();
-                coins -= 200;
-                energy += 30;
+            if (boostType === 'double-coins') {
+                // Apply double coins boost logic
+            } else if (boostType === 'double-energy') {
+                // Apply double energy boost logic
+            } else if (boostType === 'double-xp') {
+                // Apply double XP boost logic
             }
-            updateDisplay();
         }
 
         function claimDailyReward() {
-            dailyRewardSound.play();
-            coins += 100;
-            updateDisplay();
-        }
-
-        function saveGame() {
-            saveSound.play();
-            localStorage.setItem("coins", coins);
-            localStorage.setItem("energy", energy);
-            localStorage.setItem("level", level);
-        }
-
-        function resetGame() {
-            resetSound.play();
-            coins = 0;
-            energy = 10;
-            level = 1;
-            updateDisplay();
-            updateProgressBar();
-        }
-
-        function loadGame() {
-            coins = parseInt(localStorage.getItem("coins")) || 0;
-            energy = parseInt(localStorage.getItem("energy")) || 10;
-            level = parseInt(localStorage.getItem("level")) || 1;
-            updateDisplay();
-            updateProgressBar();
+            coins += 50;
+            energy += 10;
+            document.getElementById('coin-count').innerText = coins;
+            document.getElementById('energy-count').innerText = energy;
         }
 
         function toggleMenu() {
-            document.getElementById("settingsMenu").classList.toggle("active");
+            document.getElementById('settings-menu').classList.toggle('active');
         }
 
-        function changeProfilePicture(event) {
-            const reader = new FileReader();
-            reader.onload = function() {
-                document.getElementById("profilePicture").src = reader.result;
-                document.getElementById("profilePictureMenu").src = reader.result;
-            }
-            reader.readAsDataURL(event.target.files[0]);
-        }
-
-        function saveSettings() {
-            const playerName = document.getElementById("playerNameInput").value;
-            document.getElementById("playerName").innerText = playerName;
-            localStorage.setItem("playerName", playerName);
-            const profilePicture = document.getElementById("profilePicture").src;
-            localStorage.setItem("profilePicture", profilePicture);
-            toggleMenu();
-        }
-
-        function loadSettings() {
-            const playerName = localStorage.getItem("playerName");
-            if (playerName) {
-                document.getElementById("playerName").innerText = playerName;
-                document.getElementById("playerNameInput").value = playerName;
-            }
-            const profilePicture = localStorage.getItem("profilePicture");
-            if (profilePicture) {
-                document.getElementById("profilePicture").src = profilePicture;
-                document.getElementById("profilePictureMenu").src = profilePicture;
-            }
-        }
-
-        window.onload = function() {
-            loadGame();
-            loadSettings();
+        function saveProfile() {
+            // Save profile logic
         }
     </script>
 </body>
 </html>
+
