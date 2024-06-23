@@ -314,22 +314,49 @@
         <div class="daily-reward">
             <button class="button" onclick="claimDailyReward()">Claim Daily Reward</button>
         </div>
+        <div>
+            <button class="button" onclick="saveProgress()">Save Progress</button>
+            <button class="button" onclick="resetProgress()">Reset Progress</button>
+        </div>
         <div class="social-links">
             <a href="https://facebook.com" target="_blank">Facebook</a>
             <a href="https://twitter.com" target="_blank">Twitter</a>
             <a href="https://instagram.com" target="_blank">Instagram</a>
+        </div>
+        <div class="login-signup">
+            <button class="button" onclick="toggleLogin()">Login</button>
+            <button class="button" onclick="toggleSignup()">Sign Up</button>
         </div>
     </div>
     <div class="menu" id="settings-menu">
         <h2>Settings</h2>
         <div class="profile-settings">
             <img src="https://i.postimg.cc/ht0wRQmz/Default-Transform-your-imagination-into-reality-with-a-unique-3.jpg" alt="Avatar">
-            <input type="text" placeholder="Username">
-            <input type="email" placeholder="Email">
-            <input type="password" placeholder="Password">
+            <input type="text" id="username" placeholder="Username">
+            <input type="email" id="email" placeholder="Email">
+            <input type="password" id="password" placeholder="Password">
             <button onclick="saveProfile()">Save Profile</button>
         </div>
         <button class="close-menu" onclick="toggleMenu()">Close</button>
+    </div>
+    <div class="menu" id="login-menu">
+        <h2>Login</h2>
+        <div class="profile-settings">
+            <input type="email" id="login-email" placeholder="Email">
+            <input type="password" id="login-password" placeholder="Password">
+            <button onclick="login()">Login</button>
+        </div>
+        <button class="close-menu" onclick="toggleLogin()">Close</button>
+    </div>
+    <div class="menu" id="signup-menu">
+        <h2>Sign Up</h2>
+        <div class="profile-settings">
+            <input type="text" id="signup-username" placeholder="Username">
+            <input type="email" id="signup-email" placeholder="Email">
+            <input type="password" id="signup-password" placeholder="Password">
+            <button onclick="signup()">Sign Up</button>
+        </div>
+        <button class="close-menu" onclick="toggleSignup()">Close</button>
     </div>
     <script>
         let coins = 0;
@@ -374,10 +401,79 @@
             document.getElementById('settings-menu').classList.toggle('active');
         }
 
-        function saveProfile() {
-            // Save profile logic
+        function toggleLogin() {
+            document.getElementById('login-menu').classList.toggle('active');
         }
+
+        function toggleSignup() {
+            document.getElementById('signup-menu').classList.toggle('active');
+        }
+
+        function saveProfile() {
+            const username = document.getElementById('username').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            localStorage.setItem('username', username);
+            localStorage.setItem('email', email);
+            localStorage.setItem('password', password);
+            alert('Profile saved!');
+        }
+
+        function saveProgress() {
+            localStorage.setItem('coins', coins);
+            localStorage.setItem('energy', energy);
+            localStorage.setItem('level', level);
+            localStorage.setItem('progress', progress);
+            alert('Progress saved!');
+        }
+
+        function loadProgress() {
+            coins = parseInt(localStorage.getItem('coins')) || 0;
+            energy = parseInt(localStorage.getItem('energy')) || 0;
+            level = parseInt(localStorage.getItem('level')) || 1;
+            progress = parseInt(localStorage.getItem('progress')) || 0;
+            document.getElementById('coin-count').innerText = coins;
+            document.getElementById('energy-count').innerText = energy;
+            document.getElementById('level-count').innerText = level;
+            document.getElementById('progress').style.width = progress + '%';
+        }
+
+        function resetProgress() {
+            coins = 0;
+            energy = 0;
+            level = 1;
+            progress = 0;
+            document.getElementById('coin-count').innerText = coins;
+            document.getElementById('energy-count').innerText = energy;
+            document.getElementById('level-count').innerText = level;
+            document.getElementById('progress').style.width = progress + '%';
+        }
+
+        function login() {
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            const savedEmail = localStorage.getItem('email');
+            const savedPassword = localStorage.getItem('password');
+            if (email === savedEmail && password === savedPassword) {
+                alert('Login successful!');
+                toggleLogin();
+            } else {
+                alert('Incorrect email or password.');
+            }
+        }
+
+        function signup() {
+            const username = document.getElementById('signup-username').value;
+            const email = document.getElementById('signup-email').value;
+            const password = document.getElementById('signup-password').value;
+            localStorage.setItem('username', username);
+            localStorage.setItem('email', email);
+            localStorage.setItem('password', password);
+            alert('Sign up successful!');
+            toggleSignup();
+        }
+
+        window.onload = loadProgress;
     </script>
 </body>
 </html>
-
