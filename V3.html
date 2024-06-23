@@ -6,7 +6,7 @@
     <title>ZHCOIN V3 Enhanced with Sound Effects</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Arial', sans-serif;
             background: linear-gradient(45deg, #ff0000, #2b05d1, #ff0000);
             background-size: 400% 400%;
             animation: gradient 15s ease infinite;
@@ -255,50 +255,48 @@
         <div class="header">
             <div>
                 <img id="profilePicture" src="https://i.postimg.cc/QMHGZtN4/your-profile-picture.jpg" alt="Profile Picture">
-                <div>
-                    <div>ناوی یاریزان: <span id="playerName">Player</span></div>
-                </div>
+                <div id="playerName">Player</div>
             </div>
             <div class="settings" onclick="toggleMenu()">⚙️</div>
         </div>
-        <div class="coins">ژیانەوە: <span id="coinCount">0</span></div>
-        <div class="energy">هەڵوەشاندن: <span id="energyCount">10</span></div>
-        <div class="level">ئاست: <span id="level">1</span></div>
+        <div class="coins">Coins: <span id="coinCount">0</span></div>
+        <div class="energy">Energy: <span id="energyCount">10</span></div>
+        <div class="level">Level: <span id="level">1</span></div>
         <div id="hamster" class="hamster"></div>
         <div class="progress-bar">
             <div id="progress" class="progress"></div>
         </div>
         <div class="boosts">
             <div class="boost" onclick="applyBoost('speed')">
-                <div>خێرایی</div>
-                <div class="boost-tooltip">بەکارهێنانی 50 ژیانەوە</div>
+                <div>Speed</div>
+                <div class="boost-tooltip">Cost: 50 Coins</div>
             </div>
             <div class="boost" onclick="applyBoost('energy')">
-                <div>ڕۆ</div>
-                <div class="boost-tooltip">بەکارهێنانی 100 ژیانەوە</div>
+                <div>Energy</div>
+                <div class="boost-tooltip">Cost: 100 Coins</div>
             </div>
             <div class="boost" onclick="applyBoost('time')">
-                <div>کات</div>
-                <div class="boost-tooltip">بەکارهێنانی 200 ژیانەوە</div>
+                <div>Time</div>
+                <div class="boost-tooltip">Cost: 200 Coins</div>
             </div>
         </div>
         <div class="daily-reward">
-            <button class="button" onclick="claimDailyReward()">وەرگرتنی خەڵاتی رۆژانە</button>
+            <button class="button" onclick="claimDailyReward()">Claim Daily Reward</button>
         </div>
-        <button class="button" onclick="saveGame()">پاشەکەوتکردنی یاری</button>
-        <button class="button" onclick="resetGame()">ریستکردنەوە</button>
+        <button class="button" onclick="saveGame()">Save Game</button>
+        <button class="button" onclick="resetGame()">Reset Game</button>
     </div>
 
     <!-- Settings Menu -->
     <div id="settingsMenu" class="menu">
         <div class="profile-settings">
-            <h2>ڕێکخستنەکان</h2>
+            <h2>Settings</h2>
             <img id="profilePictureMenu" src="https://i.postimg.cc/QMHGZtN4/your-profile-picture.jpg" alt="Profile Picture">
             <input type="file" id="profilePictureInput" accept="image/*" onchange="changeProfilePicture(event)">
-            <input type="text" id="playerNameInput" placeholder="ناوی یاریزان" value="Player">
-            <button onclick="saveSettings()">پاشەکەوتکردن</button>
+            <input type="text" id="playerNameInput" placeholder="Player Name" value="Player">
+            <button onclick="saveSettings()">Save</button>
         </div>
-        <button class="close-menu" onclick="toggleMenu()">داخستن</button>
+        <button class="close-menu" onclick="toggleMenu()">Close</button>
     </div>
 
     <!-- Sound Effects -->
@@ -338,6 +336,9 @@
                 energy -= 1;
                 updateDisplay();
                 updateProgressBar();
+                if (coins % 10 === 0) {
+                    collectSound.play();
+                }
             }
         }
 
